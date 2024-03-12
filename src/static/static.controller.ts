@@ -1,13 +1,18 @@
-// src/app/modules/static/static.controller.ts
-import { Controller, Get } from '@nestjs/common';
-import { StaticService } from './static.service';
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as handlebars from 'handlebars';
 
 @Controller('static')
 export class StaticController {
-  constructor(private readonly staticService: StaticService) {}
-
   @Get()
-  getStaticData(): string {
-    return this.staticService.getData();
+  getPage(@Res({ passthrough: true }) res: Response): void {
+    const templatePath = path.resolve(__dirname, '../../public/assets/views/static.hbs');
+    const template = fs.readFileSync(templatePath, 'utf8');
+    const compiledTemplate = handlebars.compile(template);
+    const renderedHtml = compiledTemplate({ nom: 'Hello Static !' });
+
+    res.set({ 'content-type': 'text/html' }).send(renderedHtml);
   }
 }

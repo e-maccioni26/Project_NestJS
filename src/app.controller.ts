@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { StaticService } from './static/static.service';
 import { DynamicService } from './dynamic/dynamic.service';
+import { Response } from 'express';
 
 @Controller('example')
 export class ExampleController {
@@ -12,6 +13,13 @@ export class ExampleController {
   @Get('static')
   getStaticData(): string {
     return this.staticService.getData();
+  }
+
+  @Get()
+  get(@Res() res: Response) {
+    res.sendFile('index.html', {
+      root: '../src/views',
+    });
   }
 
   @Get('dynamic')
